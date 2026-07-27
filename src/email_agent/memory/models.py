@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -23,6 +23,7 @@ class ProcessedEmail:
     sender_email: str
     sender_name: str
     subject: str
+    body: str
     received_at: datetime
     category: str
     priority: str
@@ -38,6 +39,7 @@ class ProcessedEmail:
             sender_email=email.sender_email,
             sender_name=email.sender_name,
             subject=email.subject,
+            body=email.body,
             received_at=email.received_at,
             category=category,
             priority=priority,
