@@ -1,0 +1,33 @@
+# Email Agent Configuration
+# Copy this file to config.yaml and fill in your values.
+
+# Your role: worker | jobseeker | professor
+# Leave empty to auto-detect on first run.
+profile: ""
+
+# 163 Email (IMAP/SMTP)
+email:
+  imap_server: "imap.163.com"
+  imap_port: 993
+  smtp_server: "smtp.163.com"
+  smtp_port: 465
+  address: "your-email@163.com"
+  password: "your-smtp-auth-code"
+
+# Claude API
+claude:
+  api_key: "sk-ant-..."
+  model: "claude-sonnet-5"
+
+# Agent settings
+agent:
+  max_turns: 5
+
+# Daemon settings
+daemon:
+  check_interval: 300
+  report_at: "20:00"
+
+# Memory
+memory:
+  db_path: "data/email_agent.db"
