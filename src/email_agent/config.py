@@ -167,7 +167,9 @@ def save_config(config: Config, config_path: Optional[str] = None) -> None:
         },
     }
 
-    os.makedirs(os.path.dirname(config_path), exist_ok=True)
+    dirname = os.path.dirname(config_path)
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
     with open(config_path, "w", encoding="utf-8") as f:
         yaml.dump(data, f, allow_unicode=True, default_flow_style=False)
 

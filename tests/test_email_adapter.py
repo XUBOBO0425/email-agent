@@ -21,10 +21,14 @@ class TestIMAPAdapter:
 
     @patch("imaplib.IMAP4_SSL")
     def test_connect(self, mock_imap):
+        mock_conn = mock_imap.return_value
+        mock_conn.login.return_value = ("OK", [])
+        mock_conn.select.return_value = ("OK", [b"42"])
         adapter = IMAPAdapter("imap.163.com", 993, "test@163.com", "test")
         adapter.connect()
         mock_imap.assert_called_once_with("imap.163.com", 993)
-        mock_imap.return_value.login.assert_called_once_with("test@163.com", "test")
+        mock_conn.login.assert_called_once_with("test@163.com", "test")
+        mock_conn.select.assert_called_once_with("INBOX")
 
     @patch("imaplib.IMAP4_SSL")
     def test_search_unseen(self, mock_imap):

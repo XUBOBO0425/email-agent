@@ -90,6 +90,17 @@ class Agent:
             logger.warning("Email %s 达到 %d 轮上限，强制终止",
                            email.message_id, self.max_turns)
 
+        # Persist classification to memory so reports can find it
+        if result.classification:
+            processed = ProcessedEmail.from_email(
+                email=email,
+                category=result.classification.get("category", "unknown"),
+                priority=result.classification.get("priority", "normal"),
+                summary=result.classification.get("summary", ""),
+                classification_reason=result.classification.get("reason", ""),
+            )
+            self.memory.save_email(processed)
+
         return result
 
     def process_emails(self, emails: list[Email]) -> list[ProcessResult]:

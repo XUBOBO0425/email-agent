@@ -19,8 +19,17 @@ class IMAPAdapter(EmailAdapter):
 
     def connect(self):
         self._conn = imaplib.IMAP4_SSL(self.server, self.port)
-        self._conn.login(self.address, self.password)
-        self._conn.select("INBOX")
+        # 163 requires client identification to avoid "Unsafe Login"
+        try:
+            self._conn.xatom('ID ("name" "Email Agent" "version" "1.0" "vendor" "EmailAgent")')
+        except Exception:
+            pass
+        status, data = self._conn.login(self.address, self.password)
+        logger.debug("IMAP login: %s", status)
+        status, data = self._conn.select("INBOX")
+        if status != "OK":
+            raise RuntimeError(f"无法选择INBOX: {status} — {data}")
+        logger.debug("IMAP select INBOX: %s — %d messages", status, int(data[0]) if data else 0)
 
     def disconnect(self):
         if self._conn:
