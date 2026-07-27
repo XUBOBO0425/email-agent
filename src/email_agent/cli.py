@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from email_agent.config import load_config, save_config, validate_config
 from email_agent.memory.store import MemoryStore
 from email_agent.llm.client import ClaudeClient
+from email_agent.llm.deepseek_client import DeepSeekClient
 from email_agent.email.imap_ import IMAPAdapter
 from email_agent.agent.core import Agent
 from email_agent.agent.tools.registry import get_registry
@@ -68,10 +69,7 @@ def main():
     memory = MemoryStore(config.memory.db_path)
     memory.init()
 
-    llm = ClaudeClient(
-        api_key=config.claude.api_key,
-        model=config.claude.model,
-    )
+    llm = _create_llm_client(config)
 
     _register_tools(memory)
 
@@ -107,7 +105,7 @@ def _cmd_setup(config):
 
     memory = MemoryStore(config.memory.db_path)
     memory.init()
-    llm = ClaudeClient(api_key=config.claude.api_key, model=config.claude.model)
+    llm = _create_llm_client(config)
 
     try:
         adapter = IMAPAdapter(
@@ -364,6 +362,21 @@ def _cmd_daemon(args, config, memory, agent):
             time.sleep(args.interval)
     except KeyboardInterrupt:
         print("\n👋 已退出")
+
+
+def _create_llm_client(config):
+    """Create the appropriate LLM client based on config.provider."""
+    if config.provider == "deepseek":
+        return DeepSeekClient(
+            api_key=config.deepseek.api_key,
+            model=config.deepseek.model,
+            base_url=config.deepseek.base_url,
+        )
+    else:
+        return ClaudeClient(
+            api_key=config.claude.api_key,
+            model=config.claude.model,
+        )
 
 
 def _register_tools(memory):
