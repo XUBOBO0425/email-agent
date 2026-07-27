@@ -36,3 +36,6 @@ select = ["E", "F", "I", "N"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "integration: tests that call real Claude API (slow, costs money)",
+]
