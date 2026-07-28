@@ -160,11 +160,13 @@ class MemoryStore:
         return [_row_to_processed_email(row) for row in cur.fetchall()]
 
     def get_emails_in_range(self, since: str, before: str) -> list[ProcessedEmail]:
+        # Shift before to the next day so "before" is inclusive of the entire day
+        next_day = _next_day_str(before)
         cur = self.conn.execute(
             """SELECT * FROM processed_emails
-               WHERE received_at >= ? AND received_at <= ?
+               WHERE received_at >= ? AND received_at < ?
                ORDER BY received_at DESC""",
-            (since, before),
+            (since, next_day),
         )
         return [_row_to_processed_email(row) for row in cur.fetchall()]
 
@@ -245,3 +247,10 @@ class MemoryStore:
             (type, limit),
         )
         return [_row_to_report(row) for row in cur.fetchall()]
+
+
+def _next_day_str(date_str: str) -> str:
+    """Return the next calendar day as YYYY-MM-DD."""
+    from datetime import timedelta
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    return (dt + timedelta(days=1)).strftime("%Y-%m-%d")
